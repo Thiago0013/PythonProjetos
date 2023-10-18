@@ -5,6 +5,31 @@ def Reescrever(dado):
     os.remove(Save)
     for d in dado:
         Salvar(d)
+def Excluir():
+    dado = Dados()
+    while True:
+        print("=" * 40)
+        print('Excluir Contato'.center(40))
+        print("=" * 40)
+        if not dado == False:
+            print('Quem deseja excluir?')
+            for n,c in enumerate(dado):
+                print(f'[{n}] - {c["Nome"]}')
+            print(f'[{len(dado)}] - Sair')
+            opc = verifyInt('Digite o numero de quem deseja excluir: ')
+            if 0 <= opc <= len(dado) - 1:
+                print('Excluindo... Aguarde!')
+                sleep(3)
+                dado.pop(opc)
+                Reescrever(dado)
+                print('Excluido com sucesso!')
+            elif opc == len(dado):
+                break
+            else:
+                print('ERRO! Digite um numero recorrente as opções mostradas...')
+                sleep(2)
+        else:
+            break
 def Confirmar(txt):
     while True:
         confimar = input(txt).strip().lower()
@@ -20,6 +45,8 @@ def Dados():
             dados = file.read().split()
     except:
         print('O arquivo ainda não foi criado... Adicione contatos para criar o arquivo!')
+        sleep(2)
+        return False
     else:
         Salvo = list()
         while len(dados) != 0:
@@ -27,7 +54,7 @@ def Dados():
             Salvo.append(dado)
             for _ in range(0,4):
                 dados.pop(0)
-    return Salvo
+        return Salvo
 def Editar():
     while True:
         print("=" * 40)
@@ -35,55 +62,58 @@ def Editar():
         print("=" * 40)
         print('Contatos:')
         valor = Dados()
-        for num,valores in enumerate(valor):   
-            print(f'[{num}] - {valores["Nome"]}')
-        print(f'[{len(valor)}] - Sair do modo edição')
-        print("=" * 40)
-        opc = verifyInt(f'Escolha o numero das opções de quem deseja editar: ')
-        if 0 <= opc <= len(valor) - 1:
-            while True:
-                print("=" * 40)
-                numerar = 1
-                for n,d in valor[opc].items():
-                    print(f'[{numerar}] - {n}: {d}')
-                    numerar += 1
-                print(f'[5] - Finalizar e Salvar')
-                print(f'[6] - Cancelar e Sair')
-                print("=" * 40)
-                opc2 = verifyInt(f'Digite o numero do item que deseja editar: ')
-                print("=" * 40)
-                if opc2 == 1: #nome
-                    print('Você está editando o nome')
-                    novo_nome = input('Digite o novo nome: ')
-                    valor[opc]["Nome"] = novo_nome
-                elif opc2 == 2: #Sobrenome
-                    print('Você está editando o Sobrenome')
-                    novo_sobrenome = input('Digite o novo nome: ')
-                    valor[opc]["Sobrenome"] = novo_sobrenome
-                elif opc2 == 3: #Numero de Telefone
-                    print('Você está editando o Numero de Telefone')
-                    novo_telefone = Telefone()
-                    valor[opc]["Telefone Celular"] = novo_telefone
-                elif opc2 == 4: #E-mail
-                    print('Você está editando o E-mail')
-                    novo_Email = Email('Seu novo E-mail: ')
-                    valor[opc]["E-mail"] = novo_Email
-                elif opc2 == 5: #Finalizar
-                    print('Salvando', end='')
-                    for _ in range(0,5):
-                        print('.', end='',flush=True)
-                        sleep(1)
-                    Reescrever(valor)
-                    print("\nSalvado com sucesso!")
-                    sleep(2)
-                elif opc2 == 6: #Finalizar e Sair
-                    certeza = Confirmar('Essa ação sairá sem salvar, tem certeza que deseja sair? [s/n]: ')
-                    if certeza:
-                        break
-        elif opc == len(valor):
-            break
+        if not valor == False:
+            for num,valores in enumerate(valor):   
+                print(f'[{num}] - {valores["Nome"]}')
+            print(f'[{len(valor)}] - Sair do modo edição')
+            print("=" * 40)
+            opc = verifyInt(f'Escolha o numero das opções de quem deseja editar: ')
+            if 0 <= opc <= len(valor) - 1:
+                while True:
+                    print("=" * 40)
+                    numerar = 1
+                    for n,d in valor[opc].items():
+                        print(f'[{numerar}] - {n}: {d}')
+                        numerar += 1
+                    print(f'[5] - Finalizar e Salvar')
+                    print(f'[6] - Cancelar e Sair')
+                    print("=" * 40)
+                    opc2 = verifyInt(f'Digite o numero do item que deseja editar: ')
+                    print("=" * 40)
+                    if opc2 == 1: #nome
+                        print('Você está editando o nome')
+                        novo_nome = input('Digite o novo nome: ')
+                        valor[opc]["Nome"] = novo_nome
+                    elif opc2 == 2: #Sobrenome
+                        print('Você está editando o Sobrenome')
+                        novo_sobrenome = input('Digite o novo nome: ')
+                        valor[opc]["Sobrenome"] = novo_sobrenome
+                    elif opc2 == 3: #Numero de Telefone
+                        print('Você está editando o Numero de Telefone')
+                        novo_telefone = Telefone()
+                        valor[opc]["Telefone Celular"] = novo_telefone
+                    elif opc2 == 4: #E-mail
+                        print('Você está editando o E-mail')
+                        novo_Email = Email('Seu novo E-mail: ')
+                        valor[opc]["E-mail"] = novo_Email
+                    elif opc2 == 5: #Finalizar
+                        print('Salvando', end='')
+                        for _ in range(0,5):
+                            print('.', end='',flush=True)
+                            sleep(1)
+                        Reescrever(valor)
+                        print("\nSalvado com sucesso!")
+                        sleep(2)
+                    elif opc2 == 6: #Finalizar e Sair
+                        certeza = Confirmar('Essa ação sairá sem salvar, tem certeza que deseja sair? [s/n]: ')
+                        if certeza:
+                            break
+            elif opc == len(valor):
+                break
+            else:
+                print('ERRO! Digite um dos numeros mostrados...')
         else:
-            print('ERRO! Digite um dos numeros mostrados...')
+            break
 def verifyInt(txt):
     while True:
         try:
@@ -155,19 +185,20 @@ def Email(txt):
             print('ERRO! Houve um erro na digitação do seu email... Digite novamente!')
 def Mostrar():
     valor = Dados()
-    print("=" * 40)
-    for valores in valor:   
-        for n, d in valores.items():
-            print(f'{n}: {d}')
+    if not valor == False:
         print("=" * 40)
-        sleep(4)   
+        for valores in valor:   
+            for n, d in valores.items():
+                print(f'{n}: {d}')
+            print("=" * 40)
+            sleep(4)  
 def Adicionar():
     print("=" * 40)
     print('Adicionar'.center(40))
     print("=" * 40)
     nome = input('Nome: ')
     sobrennome = input('Sobrenome: ')
-    telefone = Telefone('Nummero de Telefone: ')
+    telefone = Telefone()
     email = Email('Email: ')
     dados = {'Nome':nome, 'Sobrenome': sobrennome, 'Telefone_Celular' : telefone, 'E-mail': email}
     print('Cadastrando... Aguarde!')

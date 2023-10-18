@@ -16,5 +16,10 @@ while True:
         Mostrar()
     elif opc == 3:
         Editar()
+    elif opc == 4:
+        Excluir()
     elif opc == 5:
         break
+    else:
+        print('ERRO! Digite o numero recorrente as opções!')
+        sleep(2)
