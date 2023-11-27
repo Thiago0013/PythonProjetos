@@ -9,17 +9,18 @@ while True:
 [3] - Marcar Tarefas
 [4] - Ver historico de tarefas
 [5] - Sair''')
+    print('=' * 40)
     opc = verifyInt('Escolha a opção: ')
     if opc == 1:
-        pass
+        Adicionar()
     elif opc == 2:
-        pass
+        print('entrou no 2')
     elif opc == 3:
         pass
     elif opc == 4:
         pass
     elif opc == 5:
-        pass
+        break
     else:
         print('ERRO! Numero incorreto! Digite um numero recorrente ao menu...')
         sleep(2.5)
