@@ -5,13 +5,20 @@ def Menu(txt):
     print('=' * 40)
     print(txt.center(40))
     print('=' * 40)
-def Dados(Valor=False, Salvar=True):
-    if Salvar:
+def Dados(Valor=False, Salvar='S'):
+    if Salvar == 'S':
         with open(SaveName, 'a') as file:
             for d in Valor:
                 d = str(d)
                 file.write(f'{d} ')
-    else:
+    elif Salvar == 'R':
+        with open(SaveName, 'w') as file:
+            file.write('')
+        with open(SaveName, 'a') as file:
+            for d in Valor:
+                d = str(d)
+                file.write(f'{d} ')
+    elif Salvar == 'P':
         try:
             with open(SaveName, 'r') as file:
                 ver = file.read().split()
@@ -20,13 +27,14 @@ def Dados(Valor=False, Salvar=True):
             return None
         else:
             Save = list()
+            print(ver)
             while len(ver) != 0:
                 dados = {'Nome': EditText(ver[0], False), 'Descrição':EditText(ver[1], False), 'Data de criação': ver[2], 'Data de validade': ver[3], 'Situação':ver[4]}
                 Save.append(dados)
                 for _ in range(0,5):
                     ver.pop(0)
             return Save
-def VerifyDate(txt):
+def VerifyDate():
         while True:
             ano = verifyInt('Ano: ')
             while True:
@@ -117,26 +125,40 @@ def verifyFloat(txt):
             print('ERRO! Digite um numero valido!')
         else:
             return num
-def Editar(dado):
+def Editar(dado, opc):
     while True:
         Menu('Editar')
         number = 0
-        for n,d in dado.items():
+        for n,d in dado[opc - 1].items():
             number += 1
             if 1 <= number < 3 or 4 == number < 5:
-                print(f'{n}: {d}')
+                if n == 'Name' or n == 'Descrição':
+                    print(f'{n}: {EditText(d, False)}')
+                else:
+                    print(f'{n}: {d}')
+        print('Sair')
         print('=' * 40)
-        opc = input('Digite o nome do item que deseja editar: ')
-        if opc in dado:
-            if opc == 'Nome':
-                dado[opc] = input('Digite o novo nome: ')
-            elif opc == 'Descrição':
-                dado[opc] = input('Digite a nova descrição: ')
+        opc2 = (input('Digite o nome do item que deseja editar: ').capitalize())
+        if opc2 in dado[opc - 1]:
+            if opc2 == 'Nome':
+                dado[opc - 1][opc2] = input('Digite o novo nome: ')
+            elif opc2 == 'Descrição':
+                dado[opc - 1][opc2] = input('Digite a nova descrição: ')
+            elif opc2 == 'Data de validade':
+                dado[opc - 1][opc2] = VerifyDate()
+            print(dado)
+        elif opc2 == "Sair":
+            dado[opc - 1]['Nome'] = EditText(dado[opc - 1]['Nome'])
+            dado[opc - 1]['Descrição'] = EditText(dado[opc - 1]['Descrição'])
+            return dado
+        else:
+            print('ERRO! Digite a palavra da forma que aparece no menu')
 def Mostrar():
     while True:
-        Menu('Mostrar dados')
-        Lista = Dados(Salvar=False)
+        save = list()
+        Lista = Dados(Salvar='P')
         if Lista is not None:
+            Menu('Mostrar dados')
             for n,d in enumerate(Lista,1):
                 print(f"{n}º {d['Nome']} [{'✓' if d['Situação'] == True else 'X'}]")
             print(f'{len(Lista) + 1}º Sair')
@@ -152,16 +174,22 @@ def Mostrar():
                 while True:
                     opc2 = input('Deseja editar? [s/n]: ')
                     if opc2 in 'Ss':
-                        Editar(Lista[opc - 1])
+                        Lista = Editar(Lista, opc)
+                        for dicio in Lista:
+                            for dado in dicio.values():
+                                save.append(dado)
+                        Dados(save, 'R')
+                        break
                     elif opc2 in 'Nn':
                         break
                     else:
                         print('ERRO! Digite s ou n')
-            elif opc == 0:
+            elif opc == 3:
+                print(Lista)
                 break
             else:
-                sleep(2)
                 print('ERRO! Digite um numero mostrado na lista!')
+                sleep(2)
         else:
             break
 def Adicionar():
@@ -169,11 +197,9 @@ def Adicionar():
     nome = EditText(input('Nome: '))
     descrição = EditText(input('Descrição: '))
     print('Atenção: Data de validade contem o formato xxxx-xx-xx')
-    data_validade = VerifyDate('Data de validade: ')
+    data_validade = VerifyDate()
     Valor = [nome, descrição, Tempo(), data_validade, False]
     print('Aguarde...')
-    Dados(Valor, True)
+    Dados(Valor, 'S')
     sleep(3)
     print('Arquivo criado!')
-Adicionar()
-print(Dados(Salvar=False))

@@ -14,7 +14,7 @@ while True:
     if opc == 1:
         Adicionar()
     elif opc == 2:
-        print('entrou no 2')
+        Mostrar()
     elif opc == 3:
         pass
     elif opc == 4:
