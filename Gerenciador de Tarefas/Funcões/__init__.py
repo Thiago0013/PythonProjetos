@@ -131,12 +131,14 @@ def Excluir(Lista, opc):
     print('Apagado!')
     return Lista
 def Marcar():
+    salva = list()
     while True:
         Menu('Marcar')
         Lista = Dados(Salvar='P')
         if Lista is not None:
             for n,d in enumerate(Lista):
-                print(f"{n+1}º {d['Nome']}; Va:{d['Data de validade']}; Marcado[{'✓' if d['Situação'] == True else 'X'}]")
+                print(f"{n+1}º {d['Nome']}; Va:{d['Data de validade']}; Marcado[{'✓' if d['Situação'] == 'True' else 'X'}]")
+            print(f'{len(Lista) + 1}º Sair')
             while True:
                 print('=' * 40)
                 opc = verifyInt('Escolha a opção que deseja marcar: ') - 1
@@ -146,7 +148,7 @@ def Marcar():
 Descrição :{Lista[opc]['Descrição']}
 Data de criação: {Lista[opc]['Data de criação']}
 Data de validade: {Lista[opc]['Data de validade']}
-Marcado[{'✓' if Lista[opc]['Situação'] == True else 'X'}]''')  
+Marcado[{'✓' if Lista[opc]['Situação'] == 'True' else 'X'}]''')  
                     print('=' * 40)
                     sleep(2)
                     print('''[1] - Marcar como feita
@@ -154,8 +156,12 @@ Marcado[{'✓' if Lista[opc]['Situação'] == True else 'X'}]''')
 [3] - Excluir
 [4] - Cancelar''')
                     break
+                elif opc == len(Lista):
+                    break
                 else:
                     print('ERRO! Esse numero não existe no menu')
+            if opc == len(Lista):
+                break 
             while True:
                 print('=' * 40)
                 opc2 = verifyInt('Escolha a opção: ')
@@ -165,24 +171,27 @@ Marcado[{'✓' if Lista[opc]['Situação'] == True else 'X'}]''')
                     print(f'Marcado como feita!')
                     break
                 elif opc2 == 2:
-                    if Lista[opc]['Situação'] == True:
+                    if Lista[opc]['Situação'] == 'True':
                         Lista[opc]['Situação'] = False
                         print(f'Marcado como não feita!')
                         break
                     else:
                         print('Essa opção já está como não feita!')
                 elif opc2 == 3:
-                    salva = list()
                     Lista = Excluir(Lista,opc)
-                    for d in Lista:
-                        for s in d.values():
-                            salva.append(s)
-                    Dados(salva, 'R')
                     break
                 elif opc2 == 4:
                     break
                 else:
-                    print('ERRO! Digite o numero mostrado no menu')  
+                    print('ERRO! Digite o numero mostrado no menu')
+            if len(Lista) != 0:
+                Lista[opc]['Nome'] = EditText(Lista[opc]['Nome'])
+                Lista[opc]['Descrição'] = EditText(Lista[opc]['Descrição'])
+                for d in Lista:
+                    for s in d.values():
+                        salva.append(s)
+            Dados(salva, 'R')
+            salva.clear()
         else:
             break
 def Editar(dado, opc):
@@ -206,7 +215,6 @@ def Editar(dado, opc):
                 dado[opc - 1][opc2] = input('Digite a nova descrição: ')
             elif opc2 == 'Data de validade':
                 dado[opc - 1][opc2] = VerifyDate()
-            print(dado)
         elif opc2 == "Sair":
             dado[opc - 1]['Nome'] = EditText(dado[opc - 1]['Nome'])
             dado[opc - 1]['Descrição'] = EditText(dado[opc - 1]['Descrição'])
@@ -220,7 +228,7 @@ def Mostrar():
         if Lista is not None:
             Menu('Mostrar dados')
             for n,d in enumerate(Lista,1):
-                print(f"{n}º {d['Nome']} [{'✓' if d['Situação'] == True else 'X'}]")
+                print(f"{n}º {d['Nome']} [{'✓' if d['Situação'] == 'True' else 'X'}]")
             print(f'{len(Lista) + 1}º Sair')
             print('=' * 40)
             opc = verifyInt('Digite um numero mostrado: ')
@@ -230,7 +238,7 @@ def Mostrar():
                     if n != 'Situação':
                         print(f'{n}: {v}')
                     else:
-                         print(f'{n}: [{"Marcada" if v == True else "Não marcada"}]')
+                         print(f'{n}: [{"Marcada" if v == "True" else "Não marcada"}]')
                 while True:
                     opc2 = input('Deseja editar? [s/n]: ')
                     if opc2 in 'Ss':
@@ -244,8 +252,7 @@ def Mostrar():
                         break
                     else:
                         print('ERRO! Digite s ou n')
-            elif opc == 3:
-                print(Lista)
+            elif opc == len(Lista) + 1:
                 break
             else:
                 print('ERRO! Digite um numero mostrado na lista!')
@@ -263,4 +270,3 @@ def Adicionar():
     Dados(Valor, 'S')
     sleep(3)
     print('Arquivo criado!')
-Marcar()

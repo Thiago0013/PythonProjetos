@@ -16,7 +16,7 @@ while True:
     elif opc == 2:
         Mostrar()
     elif opc == 3:
-        pass
+        Marcar()
     elif opc == 4:
         pass
     elif opc == 5:
