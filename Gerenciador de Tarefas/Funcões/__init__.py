@@ -33,53 +33,52 @@ def Dados(Valor=False, Salvar='S'):
                 for _ in range(0,5):
                     ver.pop(0)
             return Save
-def VerifyDate():
+def CalcularData(dataagora=False, Datavali=False):
+        if dataagora == False:
+            atualdata = Tempo()
+            try:
+                data1 = datetime.datetime.strptime(atualdata, '%Y-%m-%d')
+                data2 = datetime.datetime.strptime(Datavali, '%Y-%m-%d')
+            except:
+                return False
+            else:
+                dias = (data2 - data1).days
+                if dias <= 0:
+                    return False
+                else:
+                    return dias
+        else:
+            try:
+                data1 = datetime.datetime.strptime(dataagora, '%Y-%m-%d')
+                data2 = datetime.datetime.strptime(Datavali, '%Y-%m-%d')
+            except:
+                return False
+            else:
+                dias = (data2 - data1).days
+                if dias <= 0:
+                    return False
+                else:
+                    return dias
+def VerifyDate(datecreate=False):
         while True:
             ano = verifyInt('Ano: ')
-            while True:
-                mes = verifyInt('Mês: ')
-                if 0 < mes <= 12:
-                    if mes < 10:
-                        mes = f'0{mes}'
-                        mes = int(mes)
-                        break
-                    break
-                else:
-                    print('ERRO! Digite um mês de 01 a 12')
-            while True:
-                dia = verifyInt('Dia: ')
-                if ano % 4 > 0 and mes == 2 and 0 < dia >= 29: #Verifica se o ano é bissexto
-                    print(f'ERRO! Em ano bissexto o mês de Fevereiro só vai até o dia 29!')
-                elif ano % 4 == 0 and mes == 2 and 0 < dia <= 29:
-                    break
-                elif 0 < dia <= 31:
-                    break
-                else:
-                    print('ERRO! Digite a data entre 0 a 31')
-            while True:
-                if int(datetime.datetime.now().strftime('%Y')) == ano: #Verifica se o ano é igual o ano atual
-                    if int(datetime.datetime.now().strftime('%m')) == mes: #Verifica se o mês é igual o mês atual
-                        if int(datetime.datetime.now().strftime('%d')) < dia: #Verifica se o dia é maior que o dia atual
-                            data = f'{str(ano)}-{str(mes)}-{str(dia)}'
-                            return data
-                        else:
-                            print('ERRO! O dia adicionado é menor ou igual que o dia atual!')
-                            sleep(3)
-                            break
-                    elif int(datetime.datetime.now().strftime('%m')) < mes: #Verifica se o mês é maior que o atual
-                        data = f'{str(ano)}-{mes:02d}-{dia:02d}'
-                        return data
-                    else:
-                        print('ERRO! O mês adicionado é menor que o mês atual!')
-                        sleep(3)
-                        break
-                elif int(datetime.datetime.now().strftime('%Y')) < ano: #Verifica se o ano é maior que o atual
-                    data = f'{str(ano)}-{mes:02d}-{dia:02d}'
-                    return data
-                else:
-                    print('ERRO! O ano adicionado é menor que o ano atual!')
-                    sleep(3)
-                    break
+            mes = f"{verifyInt('Mês: '):02}"
+            dia = f'{verifyInt("Dia: "):02}'
+            datas = [ano,mes,dia]
+            data = ''
+            for n,c in enumerate(datas):
+                data += str(c)
+                if n < 2:
+                    data += '-'
+            dias = CalcularData(datecreate,data)
+            if dias > 0:
+                print(f'Data adicionada! {data}')
+                sleep(1)
+                print(f'Faltam {dias} {"dia" if dias == 1 else "dias"} para expirar!')
+                sleep(2.5)
+                return data
+            else:
+                print('ERRO! Digite a data de forma correta ou maior que a data atual... (YYYY-MM-DD)')
 def Tempo():
     data_atual = datetime.datetime.now().strftime('%Y-%m-%d')
     return data_atual
@@ -137,7 +136,7 @@ def Marcar():
         Lista = Dados(Salvar='P')
         if Lista is not None:
             for n,d in enumerate(Lista):
-                print(f"{n+1}º {d['Nome']}; Va:{d['Data de validade']}; Marcado[{'✓' if d['Situação'] == 'True' else 'X'}]")
+                print(f"{n+1}º {d['Nome']}; Dias:{CalcularData(d['Data de criação'],d['Data de validade'])}; Marcado[{'✓' if d['Situação'] == 'True' else ' '}]")
             print(f'{len(Lista) + 1}º Sair')
             while True:
                 print('=' * 40)
@@ -148,7 +147,7 @@ def Marcar():
 Descrição :{Lista[opc]['Descrição']}
 Data de criação: {Lista[opc]['Data de criação']}
 Data de validade: {Lista[opc]['Data de validade']}
-Marcado[{'✓' if Lista[opc]['Situação'] == 'True' else 'X'}]''')  
+Marcado[{'✓' if Lista[opc]['Situação'] == 'True' else ' '}]''')  
                     print('=' * 40)
                     sleep(2)
                     print('''[1] - Marcar como feita
@@ -214,7 +213,7 @@ def Editar(dado, opc):
             elif opc2 == 'Descrição':
                 dado[opc - 1][opc2] = input('Digite a nova descrição: ')
             elif opc2 == 'Data de validade':
-                dado[opc - 1][opc2] = VerifyDate()
+                dado[opc - 1][opc2] = VerifyDate(dado[opc - 1]['Data de criação'])
         elif opc2 == "Sair":
             dado[opc - 1]['Nome'] = EditText(dado[opc - 1]['Nome'])
             dado[opc - 1]['Descrição'] = EditText(dado[opc - 1]['Descrição'])
@@ -228,7 +227,7 @@ def Mostrar():
         if Lista is not None:
             Menu('Mostrar dados')
             for n,d in enumerate(Lista,1):
-                print(f"{n}º {d['Nome']} [{'✓' if d['Situação'] == 'True' else 'X'}]")
+                print(f"{n}º {d['Nome']}; Dias:{CalcularData(d['Data de criação'],d['Data de validade'])} [{'✓' if d['Situação'] == 'True' else ' '}]")
             print(f'{len(Lista) + 1}º Sair')
             print('=' * 40)
             opc = verifyInt('Digite um numero mostrado: ')
@@ -266,7 +265,5 @@ def Adicionar():
     print('Atenção: Data de validade contem o formato xxxx-xx-xx')
     data_validade = VerifyDate()
     Valor = [nome, descrição, Tempo(), data_validade, False]
-    print('Aguarde...')
     Dados(Valor, 'S')
-    sleep(3)
     print('Arquivo criado!')
