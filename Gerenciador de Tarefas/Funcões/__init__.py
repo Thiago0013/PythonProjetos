@@ -1,6 +1,7 @@
 from time import sleep
 import datetime
 SaveName = 'DataGerenciador.txt'
+Historico = 'Historico.txt'
 def Menu(txt):
     print('=' * 40)
     print(txt.center(40))
@@ -33,6 +34,11 @@ def Dados(Valor=False, Salvar='S'):
                 for _ in range(0,5):
                     ver.pop(0)
             return Save
+    elif Salvar == 'H':
+        with open(Historico, 'a') as file:
+            for d in Valor:
+                d = str(d)
+                file.write(f'{d} ')
 def CalcularData(dataagora=False, Datavali=False):
         if dataagora == False:
             atualdata = Tempo()
@@ -55,10 +61,7 @@ def CalcularData(dataagora=False, Datavali=False):
                 return False
             else:
                 dias = (data2 - data1).days
-                if dias <= 0:
-                    return False
-                else:
-                    return dias
+                return dias
 def VerifyDate(datecreate=False):
         while True:
             ano = verifyInt('Ano: ')
@@ -124,7 +127,13 @@ def verifyFloat(txt):
         else:
             return num
 def Excluir(Lista, opc):
+    historic = list()
     print('Apagando...')
+    Lista[opc]['Nome'] = EditText(Lista[opc]['Nome'])
+    Lista[opc]['Descrição'] = EditText(Lista[opc]['Descrição'])
+    for d in Lista[opc].values():
+        historic.append(d)
+    Dados(historic, 'H')
     Lista.pop(opc)
     sleep(2)
     print('Apagado!')
@@ -136,7 +145,10 @@ def Marcar():
         Lista = Dados(Salvar='P')
         if Lista is not None:
             for n,d in enumerate(Lista):
-                print(f"{n+1}º {d['Nome']}; Dias:{CalcularData(d['Data de criação'],d['Data de validade'])}; Marcado[{'✓' if d['Situação'] == 'True' else ' '}]")
+                dias = CalcularData(Datavali=d['Data de validade'])
+                if dias <= 0:
+                    dias = 'EXPIROU'
+                print(f"{n+1}º {d['Nome']}; Dias:{dias}; Marcado[{'✓' if d['Situação'] == 'True' else ' '}]")
             print(f'{len(Lista) + 1}º Sair')
             while True:
                 print('=' * 40)
@@ -166,16 +178,22 @@ Marcado[{'✓' if Lista[opc]['Situação'] == 'True' else ' '}]''')
                 opc2 = verifyInt('Escolha a opção: ')
                 print('=' * 40)
                 if opc2 == 1:
-                    Lista[opc]['Situação'] = True
-                    print(f'Marcado como feita!')
-                    break
-                elif opc2 == 2:
-                    if Lista[opc]['Situação'] == 'True':
-                        Lista[opc]['Situação'] = False
-                        print(f'Marcado como não feita!')
+                    if CalcularData(Datavali=Lista[opc]['Data de validade']) > 0:
+                        Lista[opc]['Situação'] = True
+                        print(f'Marcado como feita!')
                         break
                     else:
-                        print('Essa opção já está como não feita!')
+                        print('ERRO! Data expirada, impossivel marcar!')
+                elif opc2 == 2:
+                    if CalcularData(Datavali=Lista[opc]['Data de validade']) > 0:
+                        if Lista[opc]['Situação'] == 'True':
+                            Lista[opc]['Situação'] = False
+                            print(f'Marcado como não feita!')
+                            break
+                        else:
+                            print('Essa opção já está como não feita!')
+                    else:
+                        print('ERRO! Data expirada, impossivel marcar!')
                 elif opc2 == 3:
                     Lista = Excluir(Lista,opc)
                     break
@@ -227,7 +245,10 @@ def Mostrar():
         if Lista is not None:
             Menu('Mostrar dados')
             for n,d in enumerate(Lista,1):
-                print(f"{n}º {d['Nome']}; Dias:{CalcularData(d['Data de criação'],d['Data de validade'])} [{'✓' if d['Situação'] == 'True' else ' '}]")
+                dias = CalcularData(Datavali=d['Data de validade'])
+                if dias == False:
+                    dias = 'EXPIROU'
+                print(f"{n}º {d['Nome']}; Dias:{dias} [{'✓' if d['Situação'] == 'True' else ' '}]")
             print(f'{len(Lista) + 1}º Sair')
             print('=' * 40)
             opc = verifyInt('Digite um numero mostrado: ')
