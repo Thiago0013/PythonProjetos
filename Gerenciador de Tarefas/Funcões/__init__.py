@@ -25,6 +25,7 @@ def Dados(Valor=False, Salvar='S'):
                 ver = file.read().split()
         except: 
             print('Arquvo não existe! Adicione uma tarefa para criar o arquivo...')
+            sleep(2)
             return None
         else:
             Save = list()
@@ -39,6 +40,22 @@ def Dados(Valor=False, Salvar='S'):
             for d in Valor:
                 d = str(d)
                 file.write(f'{d} ')
+    elif Salvar == 'VH':
+        try:
+            with open(Historico, 'r') as file:
+                ver = file.read().split()
+        except: 
+            print('Arquvo não existe! Exclua uma tarefa para criar o arquivo...')
+            sleep(2)
+            return None
+        else:
+            Save = list()
+            while len(ver) != 0:
+                dados = {'Nome': EditText(ver[0], False), 'Descrição':EditText(ver[1], False), 'Data de criação': ver[2], 'Data de validade': ver[3], 'Situação':ver[4]}
+                Save.append(dados)
+                for _ in range(0,5):
+                    ver.pop(0)
+            return Save
 def CalcularData(dataagora=False, Datavali=False):
         if dataagora == False:
             atualdata = Tempo()
@@ -238,6 +255,44 @@ def Editar(dado, opc):
             return dado
         else:
             print('ERRO! Digite a palavra da forma que aparece no menu')
+def ExcluirHistorico():
+    print('Apagando...')
+    sleep(2)
+    with open(Historico, 'w') as file:
+        file.write('')
+    sleep(2)
+    print('Apagado!')
+def MostrarHistorico():
+    while True:
+        Dado = Dados(Salvar='VH')
+        if Dado is not None:
+            number = len(Dado) - 1
+            Menu('Mostrar Historico')
+            if len(Dado) > 0:
+                for nu, l in enumerate(Dado):
+                    if nu == number:
+                        for n,d in l.items():
+                            print(f"{n}: {d}")
+                    else:
+                        for n,d in l.items():
+                            print(f"{n}: {d}")
+                        print('-' * 40)
+                    sleep(2.5)
+                print('=' * 40)
+                opc = verifyInt('Digite 1 para excluir o histórico ou 0 para sair: ')
+                if opc == 0:
+                    break
+                elif opc == 1:
+                    ExcluirHistorico()
+                    break
+                else:
+                    print("ERRO! Numero digitado errado.")
+            else:
+                print('Está vazio...')
+                sleep(2)
+                break
+        else:
+            break
 def Mostrar():
     while True:
         save = list()

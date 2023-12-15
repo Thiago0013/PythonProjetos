@@ -7,7 +7,7 @@ while True:
     print('''[1] - Adicionar Tarefa
 [2] - Ver Tarefas
 [3] - Marcar Tarefas
-[4] - Ver historico de tarefas
+[4] - Acessar Histórico
 [5] - Sair''')
     print('=' * 40)
     opc = verifyInt('Escolha a opção: ')
@@ -18,7 +18,7 @@ while True:
     elif opc == 3:
         Marcar()
     elif opc == 4:
-        pass
+        MostrarHistorico()
     elif opc == 5:
         break
     else:
